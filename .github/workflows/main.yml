@@ -4,9 +4,24 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
+    branches: [ gitaction ]
 
 jobs:
+  runPHPCSInspection:
+        name: Run PHPCS inspection
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v3
+          with:
+            ref: ${{ github.event.pull_request.head.sha }}
+        - name: Run PHPCS inspection
+          uses: rtCamp/action-phpcs-code-review@v3
+          env:
+            GH_BOT_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+            SKIP_FOLDERS: "tests,.github"
+            PHPCS_SNIFFS_EXCLUDE: "WordPress.Files.FileName"
+          with:
+            args: "WordPress,WordPress-Core,WordPress-Docs"
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest    
